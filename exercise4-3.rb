@@ -1,3 +1,8 @@
+# Helper Method to format result as currency (two digit precision, trailing zeroes)
+def format_as_currency(input)
+  '%0.2f' % input
+end
+
 class Tax
   #This method returns boolean value indicating whether the item provided has sales tax applied.
   def self.sales_tax_applicable?(item_name = '')
@@ -49,22 +54,27 @@ class LineItem
     if Tax.import_duty_applicable?(@item)
       total_tax_percent += Tax.import_tax_amount
     end
-    total_tax_percent
+    total_tax_percent.round(2)
   end
 
   # This method returns the sales tax total of the line.
-  def sales_tax_total
-    @quantity * sales_tax
+  def line_item_sales_tax_total
+
+    ((pre_tax_total * 20).ceil.to_f / 20.0).round(2)
+  end
+
+  def pre_tax_total
+    @quantity * sales_tax * @price
   end
 
   # This method returns the total cost of the line.
   def line_total
-    @quantity * (1 + sales_tax)
+    (@quantity * @price + line_item_sales_tax_total).round(2)
   end
 
   # This method returns the description of the line for output on the receipt.
   def line_description
-    "#{@quantity} #{@item}: #{line_total}"
+    "#{@quantity} #{@item}: #{format_as_currency(line_total)}"
   end
 end
 
@@ -76,29 +86,31 @@ class Input
 
   # This method handles the input and adds them to the line items group.
   def add_line_item_from_string(input_line)
-    puts 'Starting Add_Line_Item_From_String'
-    puts input_line
-    # parsed_line = /(?<quantity>\d+) (?<item>.+) at (?<price> \d*\.\d{2})/.match(input_line)
     parsed_line = /(?<quantity>\d+) (?<item>.+) at (?<price>\d*\.\d{2})?/.match(input_line)
-    puts 'Parsed Line Follows'
-    puts parsed_line.captures
-    puts parsed_line.names
-    puts 'Creating New Line Item'
     new_line_item = LineItem.new(parsed_line['quantity'],parsed_line['item'],parsed_line['price'])
-    puts "New Line Item: #{new_line_item}"
     @line_items << new_line_item
   end
 
   def total
     result = 0
     @line_items.each {|line_item| result += line_item.line_total}
-    result
+    result.round(2)
   end
 
   def sales_tax_total
     result = 0
-    @line_items.each {|line_item| result += line_item.sales_tax_total}
-    result
+    @line_items.each {|line_item| result += line_item.line_item_sales_tax_total}
+    result.round(2)
+  end
+
+  def describe_line_items
+    @line_items.each {|line_item| puts line_item.line_description}
+  end
+
+  def describe_input
+    describe_line_items
+    puts "Sales Taxes: #{format_as_currency(sales_tax_total)}"
+    puts "Total: #{format_as_currency(total)}"
   end
 end
 
@@ -115,8 +127,8 @@ class ReceiptHandler
     until input_file.eof?
       input_group_end = FALSE # Telling us that the input_group has not ended yet.
       new_input = Input.new
-      puts "New Input: #{new_input}"
       @inputs << new_input
+
       until input_group_end or input_file.eof? # Stop processing a group once we're done with the file.
         input_line = input_file.readline
         case classify_file_line(input_line)
@@ -131,17 +143,22 @@ class ReceiptHandler
           else
         end
       end
+    end
+  end
 
-      # Finish Handling the Group
-      puts "New Input Complete: #{new_input}"
-      puts "Sales Tax Total: #{new_input.sales_tax_total}"
-      puts "Total: #{new_input.total}"
+  def output_results
+    count = 1
+    @inputs.each do |input|
+      puts "Output: #{count}"
+      input.describe_input
+      count += 1
+      puts
     end
   end
 
   def classify_file_line(input_line)
     case
-      when input_line.length == 0
+      when input_line.length <= 1
         return :empty
       when input_line.include?('Input')
         return :new_input
@@ -153,3 +170,4 @@ end
 
 handle_receipt = ReceiptHandler.new('exercise4-3input.txt')
 handle_receipt.read_receipts
+handle_receipt.output_results
