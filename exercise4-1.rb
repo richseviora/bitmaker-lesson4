@@ -27,6 +27,9 @@ instructor.greeting
 student = Student.new('Cristina')
 student.greeting
 
+instructor.teach
+student.teach # This is expected not to return as the Student class does not define teach.
+
 =begin
 Let's start by creating two classes: one called Student and another called Instructor.
 The student class has a method called learn that outputs "I get it!".
