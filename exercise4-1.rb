@@ -1,8 +1,11 @@
 class Instructor
-
+  def teach
+    puts "Everything in Ruby is an Object"
+  end
 end
 
 class Student
+  # @return [Puts Statement] Returns nothing; just puts object.
   def learn
     puts "I get it!"
   end
