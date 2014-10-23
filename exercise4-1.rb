@@ -1,13 +1,20 @@
+class Person
+  attr_writer :name
+  def initialize input_name="John Doe"
+    @name = input_name
+  end
+end
+
 class Instructor
   def teach
-    puts "Everything in Ruby is an Object"
+    puts 'Everything in Ruby is an Object'
   end
 end
 
 class Student
   # @return [Puts Statement] Returns nothing; just puts object.
   def learn
-    puts "I get it!"
+    puts 'I get it!'
   end
 end
 
