@@ -21,9 +21,11 @@ class Student < Person
   end
 end
 
-  instructor = Instructor.new('Chris')
-  instructor.greeting
+instructor = Instructor.new('Chris')
+instructor.greeting
 
+student = Student.new('Cristina')
+student.greeting
 
 =begin
 Let's start by creating two classes: one called Student and another called Instructor.
