@@ -1,6 +1,6 @@
 class Person
   attr_writer :name
-  def initialize input_name='John Doe'
+  def initialize (input_name = 'John Doe')
     @name = input_name
   end
   def greeting
@@ -8,18 +8,22 @@ class Person
   end
 end
 
-class Instructor
+class Instructor < Person
   def teach
     puts 'Everything in Ruby is an Object'
   end
 end
 
-class Student
+class Student < Person
   # @return [Puts Statement] Returns nothing; just puts object.
   def learn
     puts 'I get it!'
   end
 end
+
+  instructor = Instructor.new('Chris')
+  instructor.greeting
+
 
 =begin
 Let's start by creating two classes: one called Student and another called Instructor.
