@@ -33,7 +33,7 @@ class Direction
     return DIRECTIONS.key(direction)
   end
   #Returns the direction as a string.
-  def self.to_s(direction=:north)
+  def self.to_string(direction=:north)
     puts "Asking for String for Direction #{direction}" if VERBOSE
     return DIRECTIONS[direction]
   end
@@ -46,16 +46,9 @@ class Direction
     if index.nil?
       raise "Invalid Direction Provided."
     end
-    case direction
-      when :north
-        return turnLeft ? :west : :east
-      when :east
-        return turnLeft ? :north : :south
-      when :south
-        return turnLeft ? :east : :west
-      when :west
-        return turnLeft ? :south : :north
-    end
+    newIndex = turnLeft ? index - 1 : index + 1
+    newIndex %= 4
+    COMPASS[newIndex]
   end
 
   # Defines what the outcome of a move is if the user moves from a direction.
@@ -104,7 +97,7 @@ class Rover
 
   # Prints the current state of the rover.
   def print_state
-    puts "#{@location_x} #{@location_y} #{Direction.to_s(@facing_direction)}"
+    puts "#{@location_x} #{@location_y} #{Direction.to_string(@facing_direction)}"
   end
 
 end
