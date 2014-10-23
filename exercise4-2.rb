@@ -18,6 +18,8 @@ One line for each rover in the form "X Y D" where X and Y represent location and
 
 =end
 
+# Constant declarations.
+
 VERBOSE = FALSE
 DIRECTIONS = {:north => "N", :west => "W", :east => "E", :south => "S"}
 COMPASS = [:north, :east, :south, :west]
@@ -25,15 +27,18 @@ COMPASS = [:north, :east, :south, :west]
 # Implementing Directions as a separate class as its a separate entity, conceptually.
 class Direction
 
+  #Returns the direction as a symbol.
   def self.to_symbol(direction='N')
     puts "Asking for Symbol for Direction #{direction}" if VERBOSE
     return DIRECTIONS.key(direction)
   end
+  #Returns the direction as a string.
   def self.to_s(direction=:north)
     puts "Asking for String for Direction #{direction}" if VERBOSE
     return DIRECTIONS[direction]
   end
 
+  #Returns the outcome when an object is turning in a given direction, from a given cardinal direction.
   def self.turn_from_direction(direction, turnLeft=TRUE)
     # Find Direction in Compass
     puts "Turning: Left?:#{turnLeft} Direction:#{direction}" if VERBOSE
@@ -53,6 +58,7 @@ class Direction
     end
   end
 
+  # Defines what the outcome of a move is if the user moves from a direction.
   def self.move_from_direction(location_x, location_y, facing_direction)
     case facing_direction
       when :north
@@ -77,12 +83,14 @@ class Rover
     @facing_direction = Direction.to_symbol(cardinal_direction)
   end
 
+  # Instructs the rover to process all its instructions.
   def process_instructions
     instructions.each do |instruction|
       handle_instruction(instruction)
     end
   end
 
+  # Handles the instruction, asking the Directions class for their new location.
   def handle_instruction(input)
     case input
       when 'M'
@@ -94,6 +102,7 @@ class Rover
     end
   end
 
+  # Prints the current state of the rover.
   def print_state
     puts "#{@location_x} #{@location_y} #{Direction.to_s(@facing_direction)}"
   end
@@ -114,12 +123,14 @@ class Mission_Control
     report_final_state
   end
 
+  # Reports the Final State of the Rovers
   def report_final_state
     @rovers.each do |rover|
       rover.print_state
     end
   end
 
+  # Executes the Rover Commands
   def execute_rover_commands
     @rovers.each do |rover|
       puts "Starting Instructions for #{rovers.index(rover)}" if VERBOSE
@@ -127,6 +138,7 @@ class Mission_Control
     end
   end
 
+  # Reads the file and passes the data to the methods responsible for handling their inputs.
   def read_file
     puts "Starting to Read File" if VERBOSE
     input_file = File.new(@filename)
@@ -136,6 +148,7 @@ class Mission_Control
     end
   end
 
+  # Defines the plateau size based on input.
   def assign_plateau_size(input)
     puts "Assign_Plateau_Size: #{input}" if VERBOSE
     if !input.is_a?(String)
@@ -146,6 +159,7 @@ class Mission_Control
     @plateau_size = [input_array[0].to_i,input_array[1].to_i]
   end
 
+  # Deploys the rover based on the input provided.
   def deploy_rover(location_input, instructions_input)
     if VERBOSE
       puts "Deploying Rover"
