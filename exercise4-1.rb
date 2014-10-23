@@ -1,7 +1,10 @@
 class Person
   attr_writer :name
-  def initialize input_name="John Doe"
+  def initialize input_name='John Doe'
     @name = input_name
+  end
+  def greeting
+    puts "Hi my name is #{@name}!"
   end
 end
 
